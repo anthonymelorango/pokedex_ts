@@ -14,12 +14,12 @@ export function cleanInput(input: string): string[] {
     return returnInput;
 }
 
-export function startREPL() {
+export async function startREPL() {
     const state = initState();
 
     state.replInterface.prompt();
 
-    state.replInterface.on("line", (input: string) => {
+    state.replInterface.on("line", async (input: string) => {
         const cleanedInput = cleanInput(input);
         if (cleanedInput.length === 0) {
             state.replInterface.prompt();
@@ -33,7 +33,7 @@ export function startREPL() {
             console.log("Unknown command");
         } else {
             try {
-                foundCommand.callback(state);
+                await foundCommand.callback(state);
             } catch (err) {
                 console.log(err);
             }
