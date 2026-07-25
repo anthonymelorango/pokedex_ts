@@ -3,11 +3,12 @@ import { commandExit } from "./command_exit.js";
 import { commandHelp } from "./command_help.js";
 import { PokeAPI } from "./pokeapi.js";
 import { commandMap, commandMapB } from "./command_map.js";
+import { commandExplore } from "./command_explore.js";
 
 export type CLICommand = {
     name: string;
     description: string;
-    callback: (state: State) => Promise<void>;
+    callback: (state: State, ...args: string[]) => Promise<void>;
 };
 
 export type State = {
@@ -49,6 +50,11 @@ function getCommands(): Record<string, CLICommand> {
             name: "mapb",
             description: "Get the previous list of locations",
             callback: commandMapB,
+        },
+        explore: {
+            name: "explore",
+            description: "Explore a given location",
+            callback: commandExplore,
         },
         help: {
             name: "help",

@@ -33,7 +33,7 @@ export async function startREPL() {
             console.log("Unknown command");
         } else {
             try {
-                await foundCommand.callback(state);
+                await foundCommand.callback(state, ...cleanedInput);
             } catch (err) {
                 console.log(err);
             }

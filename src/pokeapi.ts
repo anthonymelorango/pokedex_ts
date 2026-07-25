@@ -1,7 +1,10 @@
+import { LocationData } from "./pokeapi_locationdata.js";
+import { ShallowLocations } from "./pokeapi_shallowlocations.js";
 import { PokeCache } from "./pokecache.js";
 
 export class PokeAPI {
     private static readonly baseURL = "https://pokeapi.co/api/v2";
+    private static readonly locationAreaSuffix = "/location-area";
 
     #cache: PokeCache;
 
@@ -10,10 +13,8 @@ export class PokeAPI {
     }
 
     async fetchLocations(pageURL?: string): Promise<ShallowLocations> {
-        const locationAreaSuffix = "/location-area";
-
         if (pageURL === undefined || pageURL === "") {
-            pageURL = PokeAPI.baseURL + locationAreaSuffix;
+            pageURL = PokeAPI.baseURL + PokeAPI.locationAreaSuffix;
         }
 
         let locations;
@@ -36,21 +37,29 @@ export class PokeAPI {
         return locations;
     }
 
-    /* TODO: Implement this
-    async fetchLocation(locationName: string): Promise<Location> {
-        // 
+    async fetchLocation(locationName: string): Promise<LocationData> {
+        if (locationName === "") {
+            throw new Error("No location name provided");
+        }
+        const pageURL = PokeAPI.baseURL + PokeAPI.locationAreaSuffix + `/${locationName}`;
+
+        let locationData;
+        const cacheResult = this.#cache.get(pageURL);
+        if (cacheResult === undefined) {
+            //console.log(`Data NOT found in cache for ${pageURL}, fetching from URL`);
+
+            const response = await fetch(pageURL);
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            locationData = await response.json();
+            this.#cache.add(pageURL, locationData);
+        } else {
+            //console.log(`Data found in cache for ${pageURL}`);
+            locationData = cacheResult.val;
+        }
+        //console.log(locations);
+        return locationData;
     }
-    */
 }
-
-export type ShallowLocations = {
-    count: number
-    next: string
-    previous: any
-    results: Result[]
-};
-
-export type Result = {
-    name: string
-    url: string
-};
