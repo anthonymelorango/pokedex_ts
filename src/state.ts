@@ -4,6 +4,9 @@ import { commandHelp } from "./command_help.js";
 import { PokeAPI } from "./pokeapi.js";
 import { commandMap, commandMapB } from "./command_map.js";
 import { commandExplore } from "./command_explore.js";
+import { commandCatch } from "./command_catch.js";
+import { Pokemon } from "./pokeapi_locationdata.js";
+import { PokemonData } from "./pokeapi_pokemondata.js";
 
 export type CLICommand = {
     name: string;
@@ -17,6 +20,7 @@ export type State = {
     pokeAPI: PokeAPI;
     nextLocationsURL: string;
     prevLocationsURL: string;
+    pokedex: Record<string, PokemonData>;
 };
 
 export function initState(): State {
@@ -29,6 +33,7 @@ export function initState(): State {
     });
 
     const pokeAPI = new PokeAPI();
+    const pokedex = {};
 
     return {
         commands: commands,
@@ -36,6 +41,7 @@ export function initState(): State {
         pokeAPI: pokeAPI,
         nextLocationsURL: "",
         prevLocationsURL: "",
+        pokedex: pokedex,
     };
 }
 
@@ -52,9 +58,14 @@ function getCommands(): Record<string, CLICommand> {
             callback: commandMapB,
         },
         explore: {
-            name: "explore",
+            name: "explore <location_name>",
             description: "Explore a given location",
             callback: commandExplore,
+        },
+        catch: {
+            name: "catch <pokemon_name>",
+            description: "Try to catch a given Pokemon",
+            callback: commandCatch,
         },
         help: {
             name: "help",

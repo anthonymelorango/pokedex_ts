@@ -26,6 +26,7 @@ export async function startREPL() {
             return;
         }
         const commandString = cleanedInput[0];
+        const args = cleanedInput.slice(1);
         //console.log(`Your command was: ${commandString}`);
         const foundCommand = state.commands[commandString];
         //console.log(`Found command was: ${foundCommand}`);
@@ -33,7 +34,7 @@ export async function startREPL() {
             console.log("Unknown command");
         } else {
             try {
-                await foundCommand.callback(state, ...cleanedInput);
+                await foundCommand.callback(state, ...args);
             } catch (err) {
                 console.log(err);
             }
